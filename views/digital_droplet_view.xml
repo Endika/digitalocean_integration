@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Tree view -->
+        <record id="view_digital_droplet_tree" model="ir.ui.view">
+            <field name="name">digital.droplet.tree</field>
+            <field name="model">digital.droplet</field>
+            <field name="arch" type="xml">
+                <tree string="Droplets">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form view -->
+        <record id="view_digital_droplet_form" model="ir.ui.view">
+            <field name="name">digital.droplet.form</field>
+            <field name="model">digital.droplet</field>
+            <field name="arch" type="xml">
+                <form string="Droplet">
+                    <div>
+                        <p><label for="name" class="oe_inline" /> <field name="name" class="oe_inline"/></p>
+                        <p><label for="state" class="oe_inline" /> <field name="state" class="oe_inline"/></p>
+                        <p><label for="date" class="oe_inline" /> <field name="date" class="oe_inline"/></p>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Window action -->
+        <record id="action_digital_droplet" model="ir.actions.act_window">
+            <field name="name">Digital Droplet</field>
+            <field name="res_model">digital.droplet</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_digital_droplet_tree">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_digital_droplet_tree"/>
+            <field name="act_window_id" ref="action_digital_droplet"/>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_digital_droplet_form">
+            <field name="sequence" eval="3"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_digital_droplet_form"/>
+            <field name="act_window_id" ref="action_digital_droplet"/>
+        </record>
+
+        <!-- ### MENU ACCESS ### -->
+        <menuitem id="digitalocean_integration" name="DigitalOcean Integration" parent="base.menu_definitions" sequence="60"/>
+
+        <menuitem id="menu_digital_droplet"
+            parent="digitalocean_integration"
+            action="action_digital_droplet"
+            sequence="1"
+            name="Droplets"/>
+
+    </data>
+</openerp>
