@@ -257,7 +257,7 @@ class digital_droplet(orm.Model):
                          context=context)
 
     def call_cron_digital_update(self, cr, uid, context=None):
-        token = self._api_key(cr, uid, [], context=context)
+        token = self._token(cr, uid, [], context=context)
         if token is False:
             return False
         manager = digitalocean.Manager(token=token)
