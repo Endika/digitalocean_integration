@@ -59,7 +59,7 @@ class digital_image(orm.Model):
                 'id': fields.char("ID", size=100,
                                   required=True, readonly=True),
                 'slug': fields.char("Slug", size=50,
-                                    required=True, readonly=True),
+                                    required=False, readonly=True),
                 'distribution': fields.char("Distribution", size=100,
                                             required=True,
                                             readonly=True),
