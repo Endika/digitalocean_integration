@@ -101,15 +101,15 @@ class digital_droplet(orm.Model):
 
     def create(self, cr, uid, vals, context=None):
         # Crear el droplet en DIGITAL OCEAN
-        super(self, cr, uid, vals, context)
+        return super(digital_droplet, self).create(cr, uid, vals, context=context)
 
     def write(self, cr, uid, vals, context=None):
         # Editar el droplet en DIGITAL OCEAN
-        super(self, cr, uid, vals, context)
+        return super(digital_droplet, self).write(cr, uid, vals, context=context)
 
     def unlink(self, cr, uid, ids, context=None):
         # eliminar el droplet en DIGITAL OCEAN
-        super(self, cr, uid, ids, context)
+        return super(digital_droplet, self).unlink(cr, uid, vals, context=context)
 
     def _token(self, cr, uid, ids, context=None):
         config_pool = self.pool.get('ir.config_parameter')
