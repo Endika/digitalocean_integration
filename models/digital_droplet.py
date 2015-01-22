@@ -182,7 +182,7 @@ class digital_droplet(orm.Model):
 
             map_image = {'name': str(image.distribution) + str(image.name),
                          'sort_name': image.name,
-                         'id': image.id
+                         'id': image.id,
                          'slug': image.slug,
                          'distribution': image.distribution,
                          'date': image.created_at,
