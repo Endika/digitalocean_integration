@@ -8,8 +8,10 @@
             <field name="arch" type="xml">
                 <tree string="Droplets">
                     <field name="name"/>
-                    <field name="date"/>
-                    <field name="state"/>
+                    <field name="region"/>
+                    <field name="image"/>
+                    <field name="size"/>
+                    <field name="status"/>
                 </tree>
             </field>
         </record>
@@ -22,8 +24,15 @@
                 <form string="Droplet">
                     <div>
                         <p><label for="name" class="oe_inline" /> <field name="name" class="oe_inline"/></p>
-                        <p><label for="state" class="oe_inline" /> <field name="state" class="oe_inline"/></p>
+                        <p><label for="region" class="oe_inline" /> <field name="region" class="oe_inline"/></p>
+                        <p><label for="size" class="oe_inline" /> <field name="size" class="oe_inline"/></p>
+                        <p><label for="image" class="oe_inline" /> <field name="image" class="oe_inline"/></p>
+                        <p><label for="backups" class="oe_inline" /> <field name="backups" class="oe_inline"/></p>
+                        <p><label for="status" class="oe_inline" /> <field name="status" class="oe_inline"/></p>
                         <p><label for="date" class="oe_inline" /> <field name="date" class="oe_inline"/></p>
+                        <p><label for="networks" class="oe_inline" /> <field name="networks" class="oe_inline"/></p>
+                        <p><label for="kernel" class="oe_inline" /> <field name="kernel" class="oe_inline"/></p>
+                        <p><label for="id" class="oe_inline" /> <field name="id" class="oe_inline"/></p>
                     </div>
                 </form>
             </field>
