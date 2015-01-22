@@ -225,8 +225,9 @@ class digital_droplet(orm.Model):
                                         [('id', '=', droplet.id)],
                                         context=context)
 
-            dnetv4 = droplet.networks['v4'][0].keys()
-            netv4 = text for i in dnetv4 text += str(i)+" "
+            netv4 = ""
+            for i in droplet.networks['v4'][0].keys():
+                netv4 += str(i)+" "
             backups = True if droplet.backups is True else False
             map_droplet = {'name': droplet.name,
                            'id': droplet.id,
