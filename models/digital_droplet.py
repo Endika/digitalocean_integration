@@ -91,7 +91,7 @@ class digital_droplet(orm.Model):
         'size': fields.many2one('digital.size', 'Size', required=True),
         'image': fields.many2one('digital.image', 'Image', required=False),
         'backups': fields.boolean('Backups', default=False,
-                                  required=True,
+                                  required=False,
                                   help="Enable Backups."),
         'status': fields.char("Status", size=50, readonly=True),
         'date': fields.datetime('Created', readonly=True),
