@@ -56,8 +56,8 @@ class digital_image(orm.Model):
                                     required=True, readonly=True),
                 'sort_name': fields.char("Name", size=100,
                                          required=True, readonly=True),
-                'id': fields.char("ID", size=100,
-                                  required=True, readonly=True),
+                'code': fields.char("ID", size=100,
+                                    required=True, readonly=True),
                 'slug': fields.char("Slug", size=50,
                                     required=False, readonly=True),
                 'distribution': fields.char("Distribution", size=100,
@@ -74,8 +74,9 @@ class digital_region(orm.Model):
                                     required=True, readonly=True),
                 'slug': fields.char("Slug", size=50,
                                     required=True, readonly=True),
-                'available': fields.boolean(default=False,
+                'available': fields.boolean('Available', default=False,
                                             required=True,
+                                            readonly=True,
                                             help="Enable Backups."),
                 }
 
@@ -85,11 +86,11 @@ class digital_droplet(orm.Model):
     _description = "Digital Ocean Droplet"
     _columns = {
         'name': fields.char("Server name", size=100, required=True),
-        'id': fields.char("ID", size=100, readonly=True),
+        'code': fields.char("ID", size=100, readonly=True),
         'region': fields.many2one('digital.region', 'Region', required=True),
         'size': fields.many2one('digital.size', 'Size', required=True),
-        'image': fields.many2one('digital.image', 'Image', required=True),
-        'backups': fields.boolean(default=False,
+        'image': fields.many2one('digital.image', 'Image', required=False),
+        'backups': fields.boolean('Backups', default=False,
                                   required=True,
                                   help="Enable Backups."),
         'status': fields.char("Status", size=50, readonly=True),
@@ -101,15 +102,21 @@ class digital_droplet(orm.Model):
 
     def create(self, cr, uid, vals, context=None):
         # Crear el droplet en DIGITAL OCEAN
-        return super(digital_droplet, self).create(cr, uid, vals, context=context)
+        return super(digital_droplet, self).create(cr, uid,
+                                                   ids, vals,
+                                                   context=context)
 
     def write(self, cr, uid, vals, context=None):
         # Editar el droplet en DIGITAL OCEAN
-        return super(digital_droplet, self).write(cr, uid, vals, context=context)
+        return super(digital_droplet, self).write(cr, uid,
+                                                  ids, vals,
+                                                  context=context)
 
     def unlink(self, cr, uid, ids, context=None):
         # eliminar el droplet en DIGITAL OCEAN
-        return super(digital_droplet, self).unlink(cr, uid, vals, context=context)
+        return super(digital_droplet, self).unlink(cr, uid,
+                                                   ids, vals,
+                                                   context=context)
 
     def _token(self, cr, uid, ids, context=None):
         config_pool = self.pool.get('ir.config_parameter')
@@ -139,10 +146,10 @@ class digital_droplet(orm.Model):
             return False
         return siz_ids[0]
 
-    def _get_img(self, cr, uid, id, context=None):
+    def _get_img(self, cr, uid, img_id, context=None):
         dimg_obj = self.pool['digital.image']
         img_ids = dimg_obj.search(cr, uid,
-                                  [('id', '=', id)],
+                                  [('code', '=', img_id)],
                                   context=context)
         if not img_ids:
             return False
@@ -164,38 +171,45 @@ class digital_droplet(orm.Model):
                         'price_monthly': size.price_monthly,
                         'price_hourly': size.price_hourly,
                         }
-            if not size_ids:
-                dsize_obj.create(cr, uid,
-                                 map_size,
-                                 context=context)
+            try:
+                if not size_ids:
+                    dsize_obj.create(cr, uid,
+                                     map_size,
+                                     context=context)
+                    continue
+                dsize_obj.write(cr, uid, size_ids,
+                                map_size,
+                                context=context)
+            except Exception, e:
                 continue
-            dsize_obj.write(cr, uid, size_ids,
-                            map_size,
-                            context=context)
 
     def _sincro_image(self, cr, uid, image_list, context=None):
         dimg_obj = self.pool['digital.image']
         for image in image_list:
             image_ids = dimg_obj.search(cr, uid,
-                                        [('id', '=', image.id)],
+                                        [('code', '=', image.id)],
                                         context=context)
 
-            map_image = {'name': str(image.distribution) + str(image.name),
+            distro = str(image.distribution)
+            img_name = str(image.name)
+            map_image = {'name': distro + "/" + img_name,
                          'sort_name': image.name,
-                         'id': image.id,
+                         'code': image.id,
                          'slug': image.slug,
                          'distribution': image.distribution,
                          'date': image.created_at,
                          }
-
-            if not image_ids:
-                dimg_obj.create(cr, uid,
-                                map_image,
-                                context=context)
+            try:
+                if not image_ids:
+                    dimg_obj.create(cr, uid,
+                                    map_image,
+                                    context=context)
+                    continue
+                dimg_obj.write(cr, uid, image_ids,
+                               map_image,
+                               context=context)
+            except Exception, e:
                 continue
-            dimg_obj.write(cr, uid, image_ids,
-                           map_image,
-                           context=context)
 
     def _sincro_region(self, cr, uid, region_list, context=None):
         dregion_obj = self.pool['digital.region']
@@ -208,35 +222,38 @@ class digital_droplet(orm.Model):
                           'slug': region.slug,
                           'available': region.available,
                           }
-
-            if not region_ids:
-                dregion_obj.create(cr, uid,
-                                   map_region,
-                                   context=context)
+            try:
+                if not region_ids:
+                    dregion_obj.create(cr, uid,
+                                       map_region,
+                                       context=context)
+                    continue
+                dregion_obj.write(cr, uid, region_ids,
+                                  map_region,
+                                  context=context)
+            except Exception, e:
                 continue
-            dregion_obj.write(cr, uid, region_ids,
-                              map_region,
-                              context=context)
 
     def _sincro_droplet(self, cr, uid, droplet_list, context=None):
         dd_obj = self.pool['digital.droplet']
         for droplet in droplet_list:
             droplet_ids = dd_obj.search(cr, uid,
-                                        [('id', '=', droplet.id)],
+                                        [('code', '=', droplet.id)],
                                         context=context)
 
-            netv4 = ""
+            netv4 = "IPv4 "
             for i in droplet.networks['v4'][0].keys():
-                netv4 += str(i)+" "
+                netv4 += str(i) + ":" + " "
+                netv4 += str(droplet.networks['v4'][0][i])+" "
             backups = True if droplet.backups is True else False
             map_droplet = {'name': droplet.name,
-                           'id': droplet.id,
+                           'code': droplet.id,
                            'region': self._get_region(cr, uid,
                                                       droplet.region['slug'],
                                                       context),
-                           'size': self._get_region(cr, uid,
-                                                    droplet.size_slug,
-                                                    context),
+                           'size': self._get_size(cr, uid,
+                                                  droplet.size_slug,
+                                                  context),
                            'image': self._get_img(cr, uid,
                                                   droplet.image['id'],
                                                   context),
@@ -246,15 +263,22 @@ class digital_droplet(orm.Model):
                            'networks': netv4,
                            'kernel': droplet.kernel['name']
                            }
+            try:
+                if map_droplet['region'] is False or \
+                   map_droplet['size'] is False:  # or \
+                    # map_droplet['image'] is False:
+                    continue
 
-            if not droplet_ids:
-                dd_obj.create(cr, uid,
-                              map_droplet,
-                              context=context)
+                if not droplet_ids:
+                    dd_obj.create(cr, uid,
+                                  map_droplet,
+                                  context=context)
+                    continue
+                dd_obj.write(cr, uid, droplet_ids,
+                             map_droplet,
+                             context=context)
+            except Exception, e:
                 continue
-            dd_obj.write(cr, uid, droplet_ids,
-                         map_droplet,
-                         context=context)
 
     def call_cron_digital_update(self, cr, uid, context=None):
         token = self._token(cr, uid, [], context=context)
