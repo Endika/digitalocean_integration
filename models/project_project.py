@@ -20,29 +20,12 @@
 #
 ##############################################################################
 
-{
-    "name": "Digital Ocean integration",
-    "version": "0.1",
-    'author': 'Endika Iglesias',
-    'maintainer': 'Endika Iglesias',
-    'website': 'http://www.endikaiglesias.com',
-    'license': 'AGPL-3',
-    "category": "Connector",
-    "description": """
-Digital Ocean Integration
-=====================
-Only integrated droplets area.
-TODO: integrate all
-    """,
-    "depends": ['project'],
-    'external_dependencies': {
-        'python': ['digitalocean'],
-    },
-    "data": [
-        "views/digital_droplet_view.xml",
-        "views/project_project_view.xml",
-        "views/res_config_view.xml",
-        "views/digital_cron.xml",
-    ],
-    "installable": True,
-}
+from openerp.osv import fields, osv
+
+
+class project_project(osv.TransientModel):
+    _inherit = 'project.project'
+    _columns = {
+        'droplet': fields.many2one('digital.droplet', 'Droplet',
+                                   required=False),
+    }

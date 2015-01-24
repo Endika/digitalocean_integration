@@ -5,11 +5,22 @@
 	    <record model="ir.cron" id="digitalocean_integration_cron">
 	            <field name="name">Update Digital Ocean data</field>
 	            <field name="interval_number">1</field>
-	            <field name="interval_type">days</field>
+	            <field name="interval_type">weeks</field>
 	            <field name="numbercall">-1</field>
 	            <field name="doall" eval="False"/>
 	            <field name="model" eval="'digital.droplet'"/>
 	            <field name="function" eval="'call_cron_digital_update'"/>
+	            <field name="args" eval="'()'" />
+        </record>
+
+	    <record model="ir.cron" id="digitalocean_integration_cron">
+	            <field name="name">Update Digital Ocean droplet</field>
+	            <field name="interval_number">1</field>
+	            <field name="interval_type">days</field>
+	            <field name="numbercall">-1</field>
+	            <field name="doall" eval="False"/>
+	            <field name="model" eval="'digital.droplet'"/>
+	            <field name="function" eval="'call_cron_droplet_update'"/>
 	            <field name="args" eval="'()'" />
         </record>
 

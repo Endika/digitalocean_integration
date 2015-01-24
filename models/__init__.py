@@ -20,4 +20,5 @@
 ##############################################################################
 
 from . import digital_droplet
+from . import project_project
 from . import res_config

@@ -290,5 +290,12 @@ class digital_droplet(orm.Model):
         self._sincro_image(cr, uid, image_list, context)
         region_list = manager.get_all_regions()
         self._sincro_region(cr, uid, region_list, context)
+
+    def call_cron_droplet_update(self, cr, uid, context=None):
+        token = self._token(cr, uid, [], context=context)
+        if token is False:
+            return False
+        manager = digitalocean.Manager(token=token)
+
         droplet_list = manager.get_all_droplets()
         self._sincro_droplet(cr, uid, droplet_list, context)
