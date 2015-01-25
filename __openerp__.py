@@ -31,8 +31,8 @@
     "description": """
 Digital Ocean Integration
 =====================
-Only integrated droplets area.
-TODO: integrate all
+Synchronize your droplet whith Odoo
+TODO: create, modify and delete droplets
     """,
     "depends": ['project'],
     'external_dependencies': {
@@ -43,6 +43,7 @@ TODO: integrate all
         "views/project_project_view.xml",
         "views/res_config_view.xml",
         "views/digital_cron.xml",
+        "security/ir.model.access.csv",
     ],
     "installable": True,
 }
