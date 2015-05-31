@@ -1,11 +1,8 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution
 #    This module copyright :
-#        (c) 2014 Antiun Ingenieria, SL (Madrid, Spain, http://www.antiun.com)
-#                 Endika Iglesias <endikaig@antiun.com>
-#                 Antonio Espinosa <antonioea@antiun.com>
+#        (c) 2015 Endika Iglesias <endika2@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -152,7 +149,6 @@ class DigitalDroplet(models.Model):
     def _get_region(self, slug):
         reg_obj = self.env['digital.region']
         reg_ids = reg_obj.search([('slug', '=', slug)])
-        _logger.info(pformat(reg_ids))
         if not reg_ids:
             return False
         return reg_ids[0]
