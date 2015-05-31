@@ -20,12 +20,10 @@
 #
 ##############################################################################
 
-from openerp.osv import fields, osv
+from openerp import models, fields
 
 
-class project_project(osv.TransientModel):
+class ProjectProject(models.Model):
     _inherit = 'project.project'
-    _columns = {
-        'droplet': fields.many2one('digital.droplet', 'Droplet',
-                                   required=False),
-    }
+
+    droplet = fields.Many2one('digital.droplet', 'Droplet', required=False)

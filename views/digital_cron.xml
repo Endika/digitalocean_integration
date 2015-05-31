@@ -2,7 +2,7 @@
 <openerp>
     <data>
 
-	    <record model="ir.cron" id="digitalocean_integration_cron">
+	    <record model="ir.cron" id="digitalocean_integration_cron_date">
 	            <field name="name">Update Digital Ocean data</field>
 	            <field name="interval_number">1</field>
 	            <field name="interval_type">weeks</field>
@@ -13,7 +13,7 @@
 	            <field name="args" eval="'()'" />
         </record>
 
-	    <record model="ir.cron" id="digitalocean_integration_cron">
+	    <record model="ir.cron" id="digitalocean_integration_cron_droplet">
 	            <field name="name">Update Digital Ocean droplet</field>
 	            <field name="interval_number">1</field>
 	            <field name="interval_type">days</field>

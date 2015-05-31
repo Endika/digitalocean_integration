@@ -20,30 +20,23 @@
 #
 ##############################################################################
 
-from openerp.osv import fields, osv
+from openerp import models, fields, api
 
 
-class digital_config_settings(osv.TransientModel):
+class DigitalConfigSettings(models.TransientModel):
     _name = 'digital.config.settings'
     _inherit = 'res.config.settings'
-    _columns = {
-        'token': fields.char('Token'),
-    }
 
-    def get_default_token(self, cr, uid, fields, context=None):
-        conf_par = self.pool.get('ir.config_parameter')
-        token = conf_par.get_param(cr, uid,
-                                   'digital_droplet.token',
-                                   default="",
-                                   context=context)
+    token = fields.Char('Token')
+
+    @api.multi
+    def get_default_token(self):
+        conf_par = self.env['ir.config_parameter']
+        token = conf_par.get_param('digital_droplet.token', default="")
 
         return {'token': token}
 
-    def set_token(self, cr, uid, ids, context=None):
-        config_parameters = self.pool.get('ir.config_parameter')
-        for record in self.browse(cr, uid, ids, context=context):
-            token = record.token
-            config_parameters.set_param(cr, uid,
-                                        'digital_droplet.token',
-                                        token,
-                                        context=context)
+    @api.multi
+    def set_token(self):
+        conf_par = self.env['ir.config_parameter']
+        conf_par.set_param('digital_droplet.token', self.token)
