@@ -34,6 +34,7 @@ _logger = logging.getLogger(__name__)
 
 class DigitalSize(models.Model):
     _name = "digital.size"
+
     name = fields.Char("Name", size=100, required=True, readonly=True)
     slug = fields.Char("Slug", size=50, required=True, readonly=True)
     memory = fields.Char("Memory", size=50, required=True, readonly=True)
@@ -76,6 +77,19 @@ class DigitalDroplet(models.Model):
     code = fields.Char("ID", size=100, readonly=True)
     region = fields.Many2one('digital.region', 'Region', required=False)
     size = fields.Many2one('digital.size', 'Size', required=False)
+
+    size_vcpus = fields.Char(
+        "CPU's", size=50, related='size.vcpus', readonly=True)
+    size_disk = fields.Char(
+        "Disk", size=50, related='size.disk', readonly=True)
+    size_transfer = fields.Char(
+        "Transfer", size=50, related='size.transfer', readonly=True)
+    size_price_monthly = fields.Char(
+        "Price per month", size=50, related='size.price_monthly',
+        readonly=True)
+    size_price_hourly = fields.Char(
+        "Price per hour", size=50, related='size.price_hourly', readonly=True)
+
     image = fields.Many2one('digital.image', 'Image', required=False)
     backups = fields.Boolean(
         'Backups', default=False, required=False, help="Enable Backups.")

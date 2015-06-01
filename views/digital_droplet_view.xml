@@ -37,7 +37,13 @@
                     <div>
                         <p><label for="name" class="oe_inline" /> <h1><field name="name" class="oe_inline"/></h1></p>
                         <p><label for="region" class="oe_inline" /> <field name="region" class="oe_inline"/></p>
-                        <p><label for="size" class="oe_inline" /> <field name="size" class="oe_inline"/></p>
+                        <p><label for="size" class="oe_inline" /> <field name="size" class="oe_inline"/>
+                           <label for="size_vcpus" class="oe_inline" /> <field name="size_vcpus" class="oe_inline"/>
+                           <label for="size_disk" class="oe_inline" /> <field name="size_disk" class="oe_inline"/>
+                           <label for="size_transfer" class="oe_inline" /> <field name="size_transfer" class="oe_inline"/>
+                           <label for="size_price_monthly" class="oe_inline" /> <field name="size_price_monthly" class="oe_inline"/>
+                           <label for="size_price_hourly" class="oe_inline" /> <field name="size_price_hourly" class="oe_inline"/>
+                        </p>
                         <p><label for="image" class="oe_inline" /> <field name="image" class="oe_inline"/></p>
                         <p><label for="backups" class="oe_inline" /> <field name="backups" class="oe_inline"/></p>
                         <p><label for="status" class="oe_inline" /> <field name="status" class="oe_inline"/></p>
