@@ -33,7 +33,6 @@ class DigitalConfigSettings(models.TransientModel):
     def get_default_token(self):
         conf_par = self.env['ir.config_parameter']
         token = conf_par.get_param('digital_droplet.token', default="")
-
         return {'token': token}
 
     @api.multi

@@ -28,12 +28,6 @@
     'website': 'http://www.endikaiglesias.com',
     'license': 'AGPL-3',
     "category": "Connector",
-    "description": """
-Digital Ocean Integration
-=====================
-Synchronize your droplet whith Odoo
-TODO: create, modify and delete droplets
-    """,
     "depends": ['project'],
     'external_dependencies': {
         'python': ['digitalocean'],

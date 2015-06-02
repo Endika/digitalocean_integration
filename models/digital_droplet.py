@@ -20,12 +20,12 @@
 ##############################################################################
 
 import datetime
-from openerp.tools.config import config
 import digitalocean
-import datetime
 from openerp import models, fields, api
 from openerp.osv import osv
 from openerp.tools.translate import _
+from json import load
+from urllib2 import urlopen
 
 import logging
 from pprint import pformat
@@ -51,12 +51,15 @@ class DigitalImage(models.Model):
     _name = "digital.image"
 
     name = fields.Char("Name", size=100, required=True, readonly=True)
-    sort_name = fields.Char("Name", size=100, required=True, readonly=True)
+    sort_name = fields.Char(
+        "Sort name", size=100, required=True, readonly=True)
     code = fields.Char("ID", size=100, required=True, readonly=True)
     slug = fields.Char("Slug", size=50, required=False, readonly=True)
     distribution = fields.Char(
         "Distribution", size=100, required=True, readonly=True)
     date = fields.Datetime('Create', readonly=True, required=True)
+    public = fields.Boolean(
+        'Public', default=False, readonly=True, help="Is public Image.")
 
 
 class DigitalRegion(models.Model):
@@ -77,7 +80,6 @@ class DigitalDroplet(models.Model):
     code = fields.Char("ID", size=100, readonly=True)
     region = fields.Many2one('digital.region', 'Region', required=False)
     size = fields.Many2one('digital.size', 'Size', required=False)
-
     size_vcpus = fields.Char(
         "CPU's", size=50, related='size.vcpus', readonly=True)
     size_disk = fields.Char(
@@ -89,7 +91,6 @@ class DigitalDroplet(models.Model):
         readonly=True)
     size_price_hourly = fields.Char(
         "Price per hour", size=50, related='size.price_hourly', readonly=True)
-
     image = fields.Many2one('digital.image', 'Image', required=False)
     backups = fields.Boolean(
         'Backups', default=False, required=False, help="Enable Backups.")
@@ -103,6 +104,8 @@ class DigitalDroplet(models.Model):
                    ('power_off', 'Power OFF'),
                    ('delete', 'Delete')],
         string='Status', default='draft', required=True)
+    localhost = fields.Boolean(
+        'Localhost', default=False, readonly=True)
 
     @api.one
     def unlink(self):
@@ -117,7 +120,6 @@ class DigitalDroplet(models.Model):
     def on_change_name(self):
         if self.state in ['draft', 'delete']:
             return
-
         token = self._token()
         if token is False:
             return False
@@ -134,7 +136,6 @@ class DigitalDroplet(models.Model):
     def on_change_backups(self):
         if self.state in ['draft', 'delete']:
             return
-
         token = self._token()
         if token is False:
             return False
@@ -207,6 +208,7 @@ class DigitalDroplet(models.Model):
                          'slug': image.slug,
                          'distribution': image.distribution,
                          'date': image.created_at,
+                         'public': image.public,
                          }
             try:
                 if not image_ids:
@@ -249,8 +251,10 @@ class DigitalDroplet(models.Model):
                 _logger.info("_sincro_region::Exception " + pformat(e))
 
     def _sincro_droplet(self, droplet_list):
+        public_ip = load(urlopen('https://api.ipify.org/?format=json'))['ip']
         d_obj = self.env['digital.droplet']
         for droplet in droplet_list:
+            droplet_public_ip = droplet.networks['v4'][0]['ip_address']
             droplet_ids = d_obj.search([('code', '=', droplet.id)])
             netv4 = "IPv4 "
             for i in droplet.networks['v4'][0].keys():
@@ -269,7 +273,8 @@ class DigitalDroplet(models.Model):
                 'networks': netv4,
                 'kernel': droplet.kernel['name'],
                 'state': 'power_on' if droplet.status == 'active'
-                else 'power_off'}
+                else 'power_off',
+                'localhost': True if public_ip == droplet_public_ip else False}
             try:
                 if not droplet_ids:
                     d_obj.create(map_droplet)
@@ -283,7 +288,6 @@ class DigitalDroplet(models.Model):
         if self.state != 'draft':
             raise osv.except_osv(_('Error!'), _("Cannot create droplet "
                                                 "because the droplet exist."))
-
         token = self._token()
         if token is False:
             return False
@@ -440,7 +444,6 @@ class DigitalDroplet(models.Model):
         if token is False:
             return False
         manager = digitalocean.Manager(token=token)
-
         size_list = manager.get_all_sizes()
         self._sincro_size(size_list)
         image_list = manager.get_all_images()
@@ -454,6 +457,5 @@ class DigitalDroplet(models.Model):
         if token is False:
             return False
         manager = digitalocean.Manager(token=token)
-
         droplet_list = manager.get_all_droplets()
         self._sincro_droplet(droplet_list)
