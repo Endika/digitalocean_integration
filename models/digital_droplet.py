@@ -72,6 +72,19 @@ class DigitalRegion(models.Model):
         readonly=True, help="Enable Backups.")
 
 
+class DigitalLog(models.Model):
+    _name = "digital.log"
+
+    log_id = fields.Char(string="ID", size=100, required=True, readonly=True)
+    droplet = fields.Many2one(
+        comodel_name='digital.droplet', string='Droplet',
+        required=True, readonly=True)
+    status = fields.Char(string='Status', size=10, readonly=True)
+    started_at = fields.Datetime(string='Started At', readonly=True)
+    completed_at = fields.Datetime(string='Completed At', readonly=True)
+    action_type = fields.Char(string='Type', size=10, readonly=True)
+
+
 class DigitalDroplet(models.Model):
     _name = "digital.droplet"
     _description = "Digital Ocean Droplet"
@@ -98,6 +111,8 @@ class DigitalDroplet(models.Model):
     date = fields.Datetime('Created', readonly=True)
     networks = fields.Char("Network", size=2000, readonly=True)
     kernel = fields.Char("Kernel", size=1000, readonly=True)
+    logs_ids = fields.One2many(
+        comodel_name='digital.log', inverse_name='droplet')
     state = fields.Selection(
         selection=[('draft', 'Draft'),
                    ('power_on', 'Power ON'),
@@ -234,6 +249,30 @@ class DigitalDroplet(models.Model):
             return img_obj.create(map_image)
         return img_ids[0]
 
+    def _get_action_log(self, droplet):
+        log_model = self.env['digital.log']
+        droplet_actions = droplet.get_actions()
+        for action in droplet_actions:
+            log_obj = log_model.search([('log_id', '=', action.id)])
+            if log_obj and log_obj.droplet and log_obj.status == 'completed':
+                continue
+            droplet_obj = self.env['digital.droplet'].search(
+                [('code', '=', droplet.id)])
+            map_log = {'log_id': action.id,
+                       'droplet': droplet_obj.id,
+                       'status': action.status,
+                       'started_at': action.started_at,
+                       'completed_at': action.completed_at,
+                       'action_type': action.type,
+                       }
+            try:
+                if not log_obj:
+                    log_model.create(map_log)
+                    continue
+                log_obj.write(map_log)
+            except Exception, e:
+                _logger.info("_get_action_log::Exception " + pformat(e))
+
     def _sincro_region(self, region_list):
         region_obj = self.env['digital.region']
         for region in region_list:
@@ -278,8 +317,9 @@ class DigitalDroplet(models.Model):
             try:
                 if not droplet_ids:
                     d_obj.create(map_droplet)
-                    continue
-                droplet_ids.write(map_droplet)
+                else:
+                    droplet_ids.write(map_droplet)
+                self._get_action_log(droplet)
             except Exception, e:
                 _logger.info("_sincro_droplet::Exception " + pformat(e))
 
