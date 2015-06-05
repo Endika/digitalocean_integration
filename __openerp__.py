@@ -34,9 +34,8 @@
     },
     "data": [
         "views/digital_droplet_view.xml",
-        "views/project_project_view.xml",
         "views/res_config_view.xml",
-        "views/digital_cron.xml",
+        "cron/cron.xml",
         "security/ir.model.access.csv",
     ],
     "installable": True,

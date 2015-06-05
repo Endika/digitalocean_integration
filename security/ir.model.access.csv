@@ -1,6 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_digital_size,access_digital_size,model_digital_size,,1,1,1,1
-access_digital_image,access_digital_image,model_digital_image,,1,1,1,1
-access_digital_region,access_digital_region,model_digital_region,,1,1,1,1
-access_digital_droplet,access_digital_droplet,model_digital_droplet,,1,1,1,1
+access_digital_size,access_digital_size,model_digital_size,,1,1,1,0
+access_digital_image,access_digital_image,model_digital_image,,1,1,1,0
+access_digital_region,access_digital_region,model_digital_region,,1,1,1,0
+access_digital_log,access_digital_log,model_digital_log,,1,1,1,0
+access_digital_droplet,access_digital_droplet,model_digital_droplet,,1,1,1,0
 

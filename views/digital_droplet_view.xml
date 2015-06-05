@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
+
         <!-- Tree view -->
         <record id="view_digital_droplet_tree" model="ir.ui.view">
             <field name="name">digital.droplet.tree</field>
@@ -23,7 +24,7 @@
             <field name="arch" type="xml">
                 <form string="Droplet">
                 <header>
-                    <button name="action_create_new_droplet" type="object" string="Create Droplet" attrs="{'invisible':[('state','!=','draft'),('state','!=','delete')]}"/>
+                    <button name="action_create_new_droplet" type="object" string="Create Droplet" attrs="{'invisible':[('state','!=','draft'),('state','!=','delete')]}" confirmation="Attention will create a new machine in your DigitalOcean, this agree?" />
                     <button name="action_delete_droplet" type="object" string="Delete Droplet" confirmation="Are you sure?, you will lose everything." attrs="{'invisible':['|',('state','!=','draft'), ('state','!=','delete')]}"/>
                     <t attrs="{'invisible':[('localhost','==',True)]}">
                         <button name="action_power_off_droplet" type="object" confirmation="Are you sure?, this is localhost computer." string="Shutdown" attrs="{'invisible':['|',('state','==','power_off'),('state','==','delete')]}"/>
@@ -92,14 +93,15 @@
         </record>
 
         <!-- ### MENU ACCESS ### -->
-        <menuitem id="digitalocean_integration" name="DigitalOcean Integration" parent="base.menu_definitions" sequence="60"/>
-
+        <menuitem name="Digital Ocean" id="menu_main_do" sequence="60"/>
+        <menuitem id="menu_digitalocean_actions" name="Digital Ocean Integration" parent="menu_main_do" sequence="1"/>
         <menuitem id="menu_digital_droplet"
-            parent="digitalocean_integration"
+            parent="menu_digitalocean_actions"
             action="action_digital_droplet"
             sequence="1"
             name="Droplets"/>
 
+        <!-- ### OTHER VIEWS ### -->
         <record id="action_digital_image" model="ir.actions.act_window">
             <field name="name">Digital Image</field>
             <field name="res_model">digital.image</field>

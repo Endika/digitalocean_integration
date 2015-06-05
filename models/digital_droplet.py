@@ -112,7 +112,7 @@ class DigitalDroplet(models.Model):
     networks = fields.Char("Network", size=2000, readonly=True)
     kernel = fields.Char("Kernel", size=1000, readonly=True)
     logs_ids = fields.One2many(
-        comodel_name='digital.log', inverse_name='droplet')
+        string="Logs", comodel_name='digital.log', inverse_name='droplet')
     state = fields.Selection(
         selection=[('draft', 'Draft'),
                    ('power_on', 'Power ON'),
@@ -120,7 +120,8 @@ class DigitalDroplet(models.Model):
                    ('delete', 'Delete')],
         string='Status', default='draft', required=True)
     localhost = fields.Boolean(
-        'Localhost', default=False, readonly=True)
+        string='Current machine', help='Is the current machine',
+        default=False, readonly=True)
 
     @api.one
     def unlink(self):

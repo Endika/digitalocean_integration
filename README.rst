@@ -1,6 +1,6 @@
 # digitalocean_integration
 Synchronize your droplet whith Odoo
-
+===================================
 TODO:
 * implement change region
 * implement rebuid droplet
