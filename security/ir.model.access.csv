@@ -4,4 +4,6 @@ access_digital_image,access_digital_image,model_digital_image,,1,1,1,0
 access_digital_region,access_digital_region,model_digital_region,,1,1,1,0
 access_digital_log,access_digital_log,model_digital_log,,1,1,1,0
 access_digital_droplet,access_digital_droplet,model_digital_droplet,,1,1,1,0
+access_digital_network,access_digital_network,model_digital_network,,1,1,1,0
+access_digital_category,access_digital_category,model_digital_category,,1,1,1,0
 

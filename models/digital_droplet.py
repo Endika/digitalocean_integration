@@ -85,6 +85,25 @@ class DigitalLog(models.Model):
     action_type = fields.Char(string='Type', size=10, readonly=True)
 
 
+class DigitalNetwork(models.Model):
+    _name = 'digital.network'
+
+    droplet = fields.Many2one(
+        comodel_name='digital.droplet', string='Droplet',
+        required=True, readonly=True)
+    version = fields.Char(string='Version', size=10, readonly=True)
+    net_type = fields.Char(string='Type', size=10, readonly=True)
+    netmask = fields.Char(string='Netmask', size=16, readonly=True)
+    ip_address = fields.Char(string='IP address', size=16, readonly=True)
+    gateway = fields.Char(string='Gateway', size=16, readonly=True)
+
+
+class DigitalCategory(osv.osv):
+    _name = "digital.category"
+
+    name = fields.Char('Name', required=True, translate=True)
+
+
 class DigitalDroplet(models.Model):
     _name = "digital.droplet"
     _description = "Digital Ocean Droplet"
@@ -109,10 +128,12 @@ class DigitalDroplet(models.Model):
         'Backups', default=False, required=False, help="Enable Backups.")
     status = fields.Char("Status", size=50, readonly=True)
     date = fields.Datetime('Created', readonly=True)
-    networks = fields.Char("Network", size=2000, readonly=True)
     kernel = fields.Char("Kernel", size=1000, readonly=True)
     logs_ids = fields.One2many(
         string="Logs", comodel_name='digital.log', inverse_name='droplet')
+    network_ids = fields.One2many(
+        string="Networks", comodel_name='digital.network',
+        inverse_name='droplet')
     state = fields.Selection(
         selection=[('draft', 'Draft'),
                    ('power_on', 'Power ON'),
@@ -122,6 +143,8 @@ class DigitalDroplet(models.Model):
     localhost = fields.Boolean(
         string='Current machine', help='Is the current machine',
         default=False, readonly=True)
+    categ_ids = fields.Many2many(
+        comodel_name='digital.category', string='Tags')
 
     @api.one
     def unlink(self):
@@ -290,36 +313,56 @@ class DigitalDroplet(models.Model):
             except Exception, e:
                 _logger.info("_sincro_region::Exception " + pformat(e))
 
-    def _sincro_droplet(self, droplet_list):
+    def _sincro_network(self, droplet):
+        d_model = self.env['digital.droplet']
+        net_model = self.env['digital.network']
+        d_obj = d_model.search([('code', '=', droplet.id)])
+        for net_version in droplet.networks.keys():
+            for net in droplet.networks[net_version]:
+                net_obj = net_model.search(
+                    [('ip_address', '=', net["ip_address"]),
+                     ('droplet', '=', d_obj.id)])
+                if not net_obj:
+                    net_map = {
+                        'version': net_version,
+                        'net_type': net['type'],
+                        'netmask': net['netmask'],
+                        'ip_address': net['ip_address'],
+                        'gateway': net['gateway'],
+                        'droplet': d_obj.id
+                    }
+                    net_model.create(net_map)
+
+    def _detect_localhost(self, droplet):
         public_ip = load(urlopen('https://api.ipify.org/?format=json'))['ip']
+        for net in droplet.networks['v4']:
+            if public_ip == net['ip_address']:
+                return True
+        return False
+
+    def _sincro_droplet(self, droplet_list):
         d_obj = self.env['digital.droplet']
         for droplet in droplet_list:
-            droplet_public_ip = droplet.networks['v4'][0]['ip_address']
             droplet_ids = d_obj.search([('code', '=', droplet.id)])
-            netv4 = "IPv4 "
-            for i in droplet.networks['v4'][0].keys():
-                netv4 += str(i) + ":" + " "
-                netv4 += str(droplet.networks['v4'][0][i]) + " "
-            backups = True if droplet.backups is True else False
             map_droplet = {
                 'name': droplet.name,
                 'code': droplet.id,
                 'region': self._get_region(droplet.region['slug']).id,
                 'size': self._get_size(droplet.size_slug).id,
                 'image': self._get_img(droplet.image).id,
-                'backups': backups,
+                'backups': True if droplet.backups is True else False,
                 'status': droplet.status,
                 'date': droplet.created_at,
-                'networks': netv4,
                 'kernel': droplet.kernel['name'],
                 'state': 'power_on' if droplet.status == 'active'
                 else 'power_off',
-                'localhost': True if public_ip == droplet_public_ip else False}
+                'localhost': self._detect_localhost(droplet)}
             try:
                 if not droplet_ids:
                     d_obj.create(map_droplet)
                 else:
                     droplet_ids.write(map_droplet)
+                self._sincro_network(droplet)
                 self._get_action_log(droplet)
             except Exception, e:
                 _logger.info("_sincro_droplet::Exception " + pformat(e))
@@ -478,6 +521,33 @@ class DigitalDroplet(models.Model):
         except Exception, e:
             raise osv.except_osv(_('Error!'), _("Cannot resize droplet: "
                                                 "%s" % (e)))
+    """
+    @api.one
+    def action_restore_droplet(self):
+        token = self._token()
+        if token is False:
+            return False
+        try:
+            manager = digitalocean.Manager(token=token)
+            droplet = manager.get_droplet(self.code)
+            droplet.restore(self.image.code)
+        except Exception, e:
+            raise osv.except_osv(_('Error!'), _("Cannot restore droplet: "
+                                                "%s" % (e)))
+
+    @api.one
+    def action_rebuid_droplet(self):
+        token = self._token()
+        if token is False:
+            return False
+        try:
+            manager = digitalocean.Manager(token=token)
+            droplet = manager.get_droplet(self.code)
+            droplet.rebuid(self.image.code)
+        except Exception, e:
+            raise osv.except_osv(_('Error!'), _("Cannot restore droplet: "
+                                                "%s" % (e)))
+    """
 
     @api.model
     def call_cron_digital_update(self):

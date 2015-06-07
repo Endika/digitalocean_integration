@@ -3,8 +3,6 @@ Synchronize your droplet whith Odoo
 
 TODO:
 
-* implement change region
-* implement rebuid droplet
-* implement reset droplet
-* implement change kernel
+* DROPLET => implement change kernel, rebuid and restore
+* Images => implement destroy, transfer and rename
 * translations
