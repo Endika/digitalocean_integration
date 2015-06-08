@@ -19,5 +19,7 @@
 #
 ##############################################################################
 
+from . import digital_other
+from . import digital_image
 from . import digital_droplet
 from . import res_config

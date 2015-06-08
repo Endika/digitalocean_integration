@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- Tree view -->
+        <record id="view_digital_droplet_tree" model="ir.ui.view">
+            <field name="name">digital.droplet.tree</field>
+            <field name="model">digital.droplet</field>
+            <field name="arch" type="xml">
+                <tree string="Droplets">
+                    <field name="name"/>
+                    <field name="region"/>
+                    <field name="image"/>
+                    <field name="size"/>
+                    <field name="status"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_image_search_form" model="ir.ui.view">
+            <field name="name">digital.image.search.form</field>
+            <field name="model">digital.image</field>
+            <field name="arch" type="xml">
+               <search string="Images">
+                <group expand="0" string="Group By">
+                    <filter string="Distribution" name="distribution" context="{'group_by':'distribution'}"/>
+                    <filter string="Public" name="public" context="{'group_by':'public'}"/>
+                </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Form view -->
+        <record id="view_digital_image_form" model="ir.ui.view">
+            <field name="name">digital.image.form</field>
+            <field name="model">digital.image</field>
+            <field name="search_view_id" ref="view_image_search_form"/>
+            <field name="arch" type="xml">
+                <form string="Images">
+                <header>
+                    <!--<button name="action_destroy_image" type="object" string="Destroy" confirm="Are you sure?, you will lose everything."/>
+                    <button name="action_transfer_image" type="object" string="Transfer" />-->
+                </header>
+                    <div>
+                        <p><label for="name" class="oe_inline" /> <h1><field name="name" class="oe_inline"/></h1></p>
+                        <p><group>
+                                <group>
+                                    <field name="sort_name" class="oe_inline" attrs="{'readonly':['|',('public','==',True)]}"/>
+                                    <field name="code" class="oe_inline"/>
+                                    <field name="slug" class="oe_inline"/>
+                                    <field name="distribution" class="oe_inline"/>
+                                    <field name="date" class="oe_inline"/>
+                                    <field name="public" class="oe_inline"/>
+                                </group>
+                            </group>
+                        </p>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="view_digital_image_tree" model="ir.ui.view">
+            <field name="name">digital.image.tree</field>
+            <field name="model">digital.image</field>
+            <field name="arch" type="xml">
+                <tree string="Droplets">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="public"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_digital_image_tree">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_digital_image_tree"/>
+            <field name="act_window_id" ref="action_digital_image"/>
+        </record>
+
+        <!-- Window action -->
+        <record id="action_digital_image" model="ir.actions.act_window">
+            <field name="name">Digital Image</field>
+            <field name="res_model">digital.image</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_digital_image_tree">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_digital_image_tree"/>
+            <field name="act_window_id" ref="action_digital_image"/>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_digital_image_form">
+            <field name="sequence" eval="3"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_digital_image_form"/>
+            <field name="act_window_id" ref="action_digital_image"/>
+        </record>
+
+
+        <!-- ### MENU ACCESS ### -->
+        <menuitem id="menu_digital_image"
+            parent="menu_digitalocean_actions"
+            action="action_digital_image"
+            sequence="2"
+            name="Image"/>
+
+    </data>
+</openerp>

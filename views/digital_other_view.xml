@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- ### OTHER VIEWS ### -->
+        <record id="action_digital_log" model="ir.actions.act_window">
+            <field name="name">Digital Log</field>
+            <field name="res_model">digital.log</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="view_digital_log_tree" model="ir.ui.view">
+            <field name="name">digital.log.tree</field>
+            <field name="model">digital.log</field>
+            <field name="arch" type="xml">
+                <tree string="Log">
+                    <field name="id"/>
+                    <field name="action_type"/>
+                    <field name="started_at"/>
+                    <field name="completed_at"/>
+                    <field name="status"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_digital_log_tree">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_digital_log_tree"/>
+            <field name="act_window_id" ref="action_digital_log"/>
+        </record>
+
+        <record id="action_digital_net" model="ir.actions.act_window">
+            <field name="name">Digital Network</field>
+            <field name="res_model">digital.network</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="view_digital_net_tree" model="ir.ui.view">
+            <field name="name">digital.net.tree</field>
+            <field name="model">digital.network</field>
+            <field name="arch" type="xml">
+                <tree string="Network">
+                    <field name="ip_address"/>
+                    <field name="netmask"/>
+                    <field name="gateway"/>
+                    <field name="net_type"/>
+                    <field name="version"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_digital_net_tree">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_digital_net_tree"/>
+            <field name="act_window_id" ref="action_digital_net"/>
+        </record>
+
+        <record id="action_digital_region" model="ir.actions.act_window">
+            <field name="name">Digital Region</field>
+            <field name="res_model">digital.region</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="view_digital_region_tree" model="ir.ui.view">
+            <field name="name">digital.region.tree</field>
+            <field name="model">digital.region</field>
+            <field name="arch" type="xml">
+                <tree string="Region">
+                    <field name="name"/>
+                    <field name="slug"/>
+                    <field name="available"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_digital_region_tree">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_digital_region_tree"/>
+            <field name="act_window_id" ref="action_digital_region"/>
+        </record>
+
+    </data>
+</openerp>

@@ -33,6 +33,8 @@
         'python': ['digitalocean'],
     },
     "data": [
+        "views/digital_other_view.xml",
+        "views/digital_image_view.xml",
         "views/digital_droplet_view.xml",
         "views/res_config_view.xml",
         "cron/cron.xml",
