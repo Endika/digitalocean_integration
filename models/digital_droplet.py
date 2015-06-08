@@ -22,7 +22,7 @@
 import datetime
 import digitalocean
 from openerp import models, fields, api
-from openerp.osv import osv
+from openerp.exceptions import Warning  # , RedirectWarning
 from openerp.tools.translate import _
 from json import load
 from urllib2 import urlopen
@@ -89,9 +89,8 @@ class DigitalDroplet(models.Model):
     def unlink(self):
         if self.state == 'delete':
             return super(DigitalDroplet, self).unlink()
-        raise osv.except_osv(_('Error!'), _("Cannot delete droplet "
-                                            "because the droplet need "
-                                            "state delete."))
+        raise Warning(_("Cannot delete droplet because the droplet need "
+                        "state delete."))
 
     @api.one
     @api.onchange('name')
@@ -106,8 +105,7 @@ class DigitalDroplet(models.Model):
             droplet = manager.get_droplet(self.code)
             droplet.rename(self.name)
         except Exception, e:
-            raise osv.except_osv(_('Error!'), _("Cannot rename droplet: "
-                                                "%s" % (e)))
+            raise Warning(_("Cannot rename droplet: %s" % (e)))
 
     @api.one
     @api.onchange('backups')
@@ -122,15 +120,12 @@ class DigitalDroplet(models.Model):
             droplet = manager.get_droplet(self.code)
             if self.backups:
                 # droplet.enable_backups()
-                raise osv.except_osv(_('Error!'), _("Cannot enable "
-                                                    "backups: "
-                                                    "Not yet implemented "
-                                                    "in APIv2"))
+                raise Warning(_("Cannot enable backups: Not yet implemented "
+                                "in APIv2"))
             else:
                 droplet.disable_backups()
         except Exception, e:
-            raise osv.except_osv(_('Error!'), _("Cannot enable/disable "
-                                                "backups: %s" % (e)))
+            raise Warning(_("Cannot enable/disable backups: %s" % (e)))
 
     def _token(self):
         config_pool = self.env['ir.config_parameter']
@@ -309,16 +304,15 @@ class DigitalDroplet(models.Model):
     @api.one
     def action_create_new_droplet(self):
         if self.state != 'draft':
-            raise osv.except_osv(_('Error!'), _("Cannot create droplet "
-                                                "because the droplet exist."))
+            raise Warning(
+                _("Cannot create droplet because the droplet exist."))
         token = self._token()
         if token is False:
             return False
         if not (self.name and self.region and self.image and self.size):
-            raise osv.except_osv(_('Error!'), _("Cannot create droplet "
-                                                "because the droplet need"
-                                                "name, region, image and "
-                                                "size"))
+            raise Warning(
+                _("Cannot create droplet because the droplet need"
+                  "name, region, image and size"))
         try:
             droplet = digitalocean.Droplet(
                 token=token, name=self.name, region=self.region.slug,
@@ -328,15 +322,13 @@ class DigitalDroplet(models.Model):
             self.write({'state': 'power_on'})
             self.write({'code': droplet.id})
         except Exception, e:
-            raise osv.except_osv(_('Error!'), _("Cannot create droplet: "
-                                                "%s" % (e)))
+            raise Warning(_("Cannot create droplet: %s" % (e)))
 
     @api.one
     def action_delete_droplet(self):
         if self.state == 'draft':
-            raise osv.except_osv(_('Error!'), _("Cannot delete droplet "
-                                                "because the droplet "
-                                                "never created."))
+            raise Warning(_("Cannot delete droplet because the droplet "
+                            "never created."))
         token = self._token()
         if token is False:
             return False
@@ -346,15 +338,13 @@ class DigitalDroplet(models.Model):
             droplet.destroy()
             self.write({'state': 'delete'})
         except Exception, e:
-            raise osv.except_osv(_('Error!'), _("Cannot delete droplet: "
-                                                "%s" % (e)))
+            raise Warning(_("Cannot delete droplet: %s" % (e)))
 
     @api.one
     def action_power_off_droplet(self):
         if self.state == 'draft' or self.state == 'delete':
-            raise osv.except_osv(_('Error!'), _("Cannot shutdown droplet "
-                                                "because the droplet "
-                                                "no exist."))
+            raise Warning(_("Cannot shutdown droplet because the droplet "
+                            "no exist."))
         token = self._token()
         if token is False:
             return False
@@ -364,15 +354,13 @@ class DigitalDroplet(models.Model):
             droplet.power_off()
             self.write({'state': 'power_off'})
         except Exception, e:
-            raise osv.except_osv(_('Error!'), _("Cannot shutdown droplet: "
-                                                "%s" % (e)))
+            raise Warning(_("Cannot shutdown droplet: %s" % (e)))
 
     @api.one
     def action_power_on_droplet(self):
         if self.state == 'draft' or self.state == 'delete':
-            raise osv.except_osv(_('Error!'), _("Cannot power on droplet "
-                                                "because the droplet "
-                                                "no exist."))
+            raise Warning(_("Cannot power on droplet because the droplet "
+                            "no exist."))
         token = self._token()
         if token is False:
             return False
@@ -382,15 +370,13 @@ class DigitalDroplet(models.Model):
             droplet.power_on()
             self.write({'state': 'power_on'})
         except Exception, e:
-            raise osv.except_osv(_('Error!'), _("Cannot power on droplet: "
-                                                "%s" % (e)))
+            raise Warning(_("Cannot power on droplet: %s" % (e)))
 
     @api.one
     def action_reboot_droplet(self):
         if self.state == 'draft' or self.state == 'delete':
-            raise osv.except_osv(_('Error!'), _("Cannot reboot droplet "
-                                                "because the droplet "
-                                                "no exist."))
+            raise Warning(_("Cannot reboot droplet because the droplet "
+                            "no exist."))
         token = self._token()
         if token is False:
             return False
@@ -400,8 +386,7 @@ class DigitalDroplet(models.Model):
             droplet.reboot()
             self.write({'state': 'power_off'})
         except Exception, e:
-            raise osv.except_osv(_('Error!'), _("Cannot reboot droplet: "
-                                                "%s" % (e)))
+            raise Warning(_("Cannot reboot droplet: %s" % (e)))
 
     @api.one
     def action_reset_root_password_droplet(self):
@@ -413,15 +398,13 @@ class DigitalDroplet(models.Model):
             droplet = manager.get_droplet(self.code)
             droplet.reset_root_password()
         except Exception, e:
-            raise osv.except_osv(_('Error!'), _("Cannot reset password: "
-                                                "%s" % (e)))
+            raise Warning(_("Cannot reset droplet: %s" % (e)))
 
     @api.one
     def action_refresh_droplet(self):
         if not self.code or self.state == 'draft' or self.state == 'delete':
-            raise osv.except_osv(_('Error!'), _("Cannot refresh droplet "
-                                                "because the droplet "
-                                                "no exist."))
+            raise Warning(_("Cannot refresh droplet because the droplet "
+                            "no exist."))
         token = self._token()
         if token is False:
             return False
@@ -430,8 +413,7 @@ class DigitalDroplet(models.Model):
             droplet = manager.get_droplet(self.code)
             self._sincro_droplet([droplet])
         except Exception, e:
-            raise osv.except_osv(_('Error!'), _("Cannot refresh droplet: "
-                                                "%s" % (e)))
+            raise Warning(_("Cannot refresh droplet: %s" % (e)))
 
     @api.one
     def action_take_snapshot_droplet(self):
@@ -445,8 +427,7 @@ class DigitalDroplet(models.Model):
                 self.name) + '_' + datetime.datetime.now().strftime("%Y_%m_%d")
             droplet.take_snapshot(name_snapshot)
         except Exception, e:
-            raise osv.except_osv(_('Error!'), _("Cannot snapshot droplet: "
-                                                "%s" % (e)))
+            raise Warning(_("Cannot snapshot droplet: %s" % (e)))
 
     @api.one
     def action_resize_droplet(self):
@@ -458,8 +439,8 @@ class DigitalDroplet(models.Model):
             droplet = manager.get_droplet(self.code)
             droplet.resize(self.size.slug)
         except Exception, e:
-            raise osv.except_osv(_('Error!'), _("Cannot resize droplet: "
-                                                "%s" % (e)))
+            raise Warning(_("Cannot resize droplet: %s" % (e)))
+
     """
     @api.one
     def action_restore_droplet(self):
@@ -471,8 +452,7 @@ class DigitalDroplet(models.Model):
             droplet = manager.get_droplet(self.code)
             droplet.restore(self.image.code)
         except Exception, e:
-            raise osv.except_osv(_('Error!'), _("Cannot restore droplet: "
-                                                "%s" % (e)))
+            raise Warning(_("Cannot restore droplet: %s" % (e)))
 
     @api.one
     def action_rebuid_droplet(self):
@@ -484,8 +464,7 @@ class DigitalDroplet(models.Model):
             droplet = manager.get_droplet(self.code)
             droplet.rebuid(self.image.code)
         except Exception, e:
-            raise osv.except_osv(_('Error!'), _("Cannot restore droplet: "
-                                                "%s" % (e)))
+            raise Warning(_("Cannot rebuid droplet: %s" % (e)))
     """
 
     @api.model
