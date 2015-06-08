@@ -21,7 +21,7 @@
 
 import digitalocean
 from openerp import models, fields, api
-from openerp.osv import osv
+from openerp.exceptions import Warning  # , RedirectWarning
 from openerp.tools.translate import _
 
 
@@ -55,8 +55,7 @@ class DigitalImage(models.Model):
             image = manager.get_image(self.code)
             image.rename(vals['sort_name'])
         except Exception, e:
-            raise osv.except_osv(_('Error!'), _("Cannot rename image: "
-                                                "%s" % (e)))
+            raise Warning(_("Cannot rename image: %s" % (e)))
 
     @api.multi
     def write(self, vals):
