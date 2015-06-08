@@ -101,34 +101,45 @@ class DigitalNetwork(models.Model):
 class DigitalCategory(osv.osv):
     _name = "digital.category"
 
-    name = fields.Char('Name', required=True, translate=True)
+    name = fields.Char(string='Name', required=True, translate=True)
 
 
 class DigitalDroplet(models.Model):
-    _name = "digital.droplet"
-    _description = "Digital Ocean Droplet"
+    _name = 'digital.droplet'
+    _description = 'Digital Ocean Droplet'
 
-    name = fields.Char("Server name", size=100, required=True)
-    code = fields.Char("ID", size=100, readonly=True)
-    region = fields.Many2one('digital.region', 'Region', required=False)
-    size = fields.Many2one('digital.size', 'Size', required=False)
+    name = fields.Char(string='Server name', size=100, required=True)
+    code = fields.Char(string='ID', size=100, readonly=True)
+    region = fields.Many2one(
+        comodel_name='digital.region', string='Region', required=False,
+        help='If you change region, '
+        'you should press transfer button for apply.')
+    size = fields.Many2one(
+        comodel_name='digital.size', string='Size', required=False,
+        help='If you change size, '
+        'you should press resize button for apply.')
     size_vcpus = fields.Char(
-        "CPU's", size=50, related='size.vcpus', readonly=True)
+        string='CPU\'s', size=50, related='size.vcpus', readonly=True)
     size_disk = fields.Char(
-        "Disk", size=50, related='size.disk', readonly=True)
+        string='Disk', size=50, related='size.disk', readonly=True)
     size_transfer = fields.Char(
-        "Transfer", size=50, related='size.transfer', readonly=True)
+        string='Transfer', size=50, related='size.transfer', readonly=True)
     size_price_monthly = fields.Char(
-        "Price per month", size=50, related='size.price_monthly',
+        string='Price per month', size=50, related='size.price_monthly',
         readonly=True)
     size_price_hourly = fields.Char(
-        "Price per hour", size=50, related='size.price_hourly', readonly=True)
-    image = fields.Many2one('digital.image', 'Image', required=False)
+        string='Price per hour', size=50, related='size.price_hourly',
+        readonly=True)
+    image = fields.Many2one(
+        comodel_name='digital.image', string='Image',
+        required=False, help='If you change image, '
+        'you should press rebuild/restore button for apply.')
     backups = fields.Boolean(
-        'Backups', default=False, required=False, help="Enable Backups.")
-    status = fields.Char("Status", size=50, readonly=True)
-    date = fields.Datetime('Created', readonly=True)
-    kernel = fields.Char("Kernel", size=1000, readonly=True)
+        string='Backups', default=False, required=False,
+        help="Enable Backups.")
+    status = fields.Char(string='Internal status', size=50, readonly=True)
+    date = fields.Datetime(string='Created', readonly=True)
+    kernel = fields.Char(string='Current kernel', size=1000, readonly=True)
     logs_ids = fields.One2many(
         string="Logs", comodel_name='digital.log', inverse_name='droplet')
     network_ids = fields.One2many(
@@ -139,7 +150,7 @@ class DigitalDroplet(models.Model):
                    ('power_on', 'Power ON'),
                    ('power_off', 'Power OFF'),
                    ('delete', 'Delete')],
-        string='Status', default='draft', required=True)
+        string='State', default='draft', required=True)
     localhost = fields.Boolean(
         string='Current machine', help='Is the current machine',
         default=False, readonly=True)
