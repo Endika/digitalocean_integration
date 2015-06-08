@@ -32,6 +32,7 @@
                 </search>
             </field>
         </record>
+
         <!-- Form view -->
         <record id="view_digital_droplet_form" model="ir.ui.view">
             <field name="name">digital.droplet.form</field>
