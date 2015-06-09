@@ -42,7 +42,9 @@
                 <form string="Droplet">
                 <header>
                     <button name="action_create_new_droplet" type="object" string="Create Droplet" attrs="{'invisible':[('state','!=','draft'),('state','!=','delete')]}" confirm="Attention will create a new machine in your DigitalOcean, this agree?" />
-                    <button name="action_delete_droplet" type="object" string="Delete Droplet" confirm="Are you sure?, you will lose everything." attrs="{'invisible':['|',('state','==','draft'), ('state','==','delete')]}"/>
+                    <button name="action_delete_droplet" type="object" string="Delete Droplet" confirm="Are you sure?, you will lose everything." attrs="{'invisible':['|','|',('state','==','draft'), ('state','==','delete'), ('state','==','power_on')]}"/>
+                    <button name="action_rebuid_droplet" type="object" string="Rebuid Droplet" confirm="Are you sure?, you will lose everything." attrs="{'invisible':['|','|',('state','==','draft'), ('state','==','delete'), ('state','==','power_on')]}"/>
+                    <button name="action_restore_droplet" type="object" string="Restore Droplet" confirm="Are you sure?, you will lose everything." attrs="{'invisible':['|',('state','==','draft'), ('state','==','delete')]}"/>
                     <t attrs="{'invisible':[('localhost','==',True)]}">
                         <button name="action_power_off_droplet" type="object" confirm="Are you sure?, this is localhost computer." string="Shutdown" attrs="{'invisible':['|',('state','==','power_off'),('state','==','delete')]}"/>
                         <button name="action_reboot_droplet" type="object" string="Reboot" confirm="Are you sure?, this is localhost computer." attrs="{'invisible':['|',('state','==','power_off'),('state','==','delete')]}"/>
@@ -54,15 +56,15 @@
                     <button name="action_power_on_droplet" type="object" string="Power" attrs="{'invisible':['|',('state','==','power_on'),('state','==','delete')]}"/>
                     <button name="action_reset_root_password_droplet" type="object" string="Reset Root Password" attrs="{'invisible':['|',('state','==','draft'),('state','==','delete')]}"/>
                     <button name="action_refresh_droplet" type="object" string="Refresh" attrs="{'invisible':['|',('state','==','draft'),('state','==','delete')]}"/>
-                    <button name="action_take_snapshot_droplet" type="object" string="Take snapshot" attrs="{'invisible':['|',('state','==','draft'),('state','==','delete')]}"/>
-                    <button name="action_resize_droplet" type="object" string="Resize" attrs="{'invisible':['|',('state','==','draft'),('state','==','delete')]}"/>
+                    <button name="action_take_snapshot_droplet" type="object" string="Take snapshot" attrs="{'invisible':['|','|',('state','==','draft'),('state','==','delete'), ('state','==','power_on')]}"/>
+                    <button name="action_resize_droplet" type="object" string="Resize" attrs="{'invisible':['|','|',('state','==','draft'),('state','==','delete'), ('state','==','power_on')]}"/>
                     <field name="state" widget="statusbar" />
                 </header>
                     <div>
                         <p><label for="name" class="oe_inline" /> <h1><field name="name" class="oe_inline"/></h1></p>
                         <p><group>
                                 <group>
-                                    <field name="region" class="oe_inline"/>
+                                    <field name="region" class="oe_inline" attrs="{'readonly':[('state','!=','draft')]}"/>
                                     <field name="image" class="oe_inline"/>
                                     <field name="size" class="oe_inline"/>
                                     <field name="backups" class="oe_inline"/>

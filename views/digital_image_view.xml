@@ -38,8 +38,9 @@
             <field name="arch" type="xml">
                 <form string="Images">
                 <header>
-                    <!--<button name="action_destroy_image" type="object" string="Destroy" confirm="Are you sure?, you will lose everything."/>
-                    <button name="action_transfer_image" type="object" string="Transfer" />-->
+                    <button name="action_destroy_image" type="object" string="Destroy" confirm="Are you sure?, you will lose everything."/>
+                    <!--<button name="action_transfer_image" type="object" string="Transfer" />-->
+                    <field name="state" widget="statusbar" />
                 </header>
                     <div>
                         <p><label for="name" class="oe_inline" /> <h1><field name="name" class="oe_inline"/></h1></p>

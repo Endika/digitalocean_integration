@@ -7,5 +7,5 @@ You can related your machine with project https://github.com/Endika/project_digi
 
 TODO:
 
-* Droplet => implement change kernel, rebuid and restore
-* Images => implement destroy and transfer
+* Droplet => implement change kernel
+* Images => implement transfer

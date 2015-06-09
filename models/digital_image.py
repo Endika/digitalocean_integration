@@ -38,6 +38,10 @@ class DigitalImage(models.Model):
     date = fields.Datetime('Create', readonly=True, required=True)
     public = fields.Boolean(
         'Public', default=False, readonly=True, help="Is public Image.")
+    state = fields.Selection(
+        selection=[('active', 'Active'),
+                   ('delete', 'Delete')],
+        string='State', default='active', required=True)
 
     def _token(self):
         config_pool = self.env['ir.config_parameter']
@@ -63,3 +67,23 @@ class DigitalImage(models.Model):
             self.on_change_name(vals)
             vals['name'] = self.distribution + '/' + vals['sort_name']
         return super(DigitalImage, self).write(vals)
+
+    @api.one
+    def unlink(self):
+        if self.state == 'delete':
+            return super(DigitalImage, self).unlink()
+        raise Warning(_("Cannot delete image because the image need "
+                        "state delete."))
+
+    @api.one
+    def action_destroy_image(self):
+        token = self._token()
+        if token is False:
+            return False
+        try:
+            manager = digitalocean.Manager(token=token)
+            image = manager.get_image(self.code)
+            image.destroy()
+            self.write({'state': 'delete'})
+        except Exception, e:
+            raise Warning(_("Cannot delete image: %s" % (e)))

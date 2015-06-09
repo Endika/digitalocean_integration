@@ -39,9 +39,7 @@ class DigitalDroplet(models.Model):
     name = fields.Char(string='Server name', size=100, required=True)
     code = fields.Char(string='ID', size=100, readonly=True)
     region = fields.Many2one(
-        comodel_name='digital.region', string='Region', required=False,
-        help='If you change region, '
-        'you should press transfer button for apply.')
+        comodel_name='digital.region', string='Region', required=False)
     size = fields.Many2one(
         comodel_name='digital.size', string='Size', required=False,
         help='If you change size, '
@@ -441,7 +439,6 @@ class DigitalDroplet(models.Model):
         except Exception, e:
             raise Warning(_("Cannot resize droplet: %s" % (e)))
 
-    """
     @api.one
     def action_restore_droplet(self):
         token = self._token()
@@ -465,7 +462,6 @@ class DigitalDroplet(models.Model):
             droplet.rebuid(self.image.code)
         except Exception, e:
             raise Warning(_("Cannot rebuid droplet: %s" % (e)))
-    """
 
     @api.model
     def call_cron_digital_update(self):
