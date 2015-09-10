@@ -58,7 +58,7 @@
                     <button name="action_refresh_droplet" type="object" string="Refresh" attrs="{'invisible':['|',('state','==','draft'),('state','==','delete')]}"/>
                     <button name="action_take_snapshot_droplet" type="object" string="Take snapshot" attrs="{'invisible':['|','|',('state','==','draft'),('state','==','delete'), ('state','==','power_on')]}"/>
                     <button name="action_resize_droplet" type="object" string="Resize" attrs="{'invisible':['|','|',('state','==','draft'),('state','==','delete'), ('state','==','power_on')]}"/>
-                    <field name="state" widget="statusbar" />
+                    <field name="state" widget="statusbar" clickable="True" />
                 </header>
                     <div>
                         <p><label for="name" class="oe_inline" /> <h1><field name="name" class="oe_inline"/></h1></p>
